@@ -4,7 +4,7 @@ import { supabase } from '$lib/db'
 import { onMount } from 'svelte'
 import { page } from '$app/stores'
 import {Form,Modal,Button,Table} from 'spaper'
-import AddTodo from '$lib/component/todo/addtodo.svelte'
+import AddTodo from '$lib/component/employee/addrecord.svelte'
 let loading = false,isTodoDlg=false
 let todos=[]
 onMount(()=>{

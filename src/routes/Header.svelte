@@ -6,14 +6,14 @@ import { goto } from '$app/navigation'
 	import {Navbar,Button} from 'spaper'
 
   const onlogin=(event)=>{
-    goto('/auth')
+    goto('/')
   }
   const onlogout=async (event)=>{
      try{
         const { error } = await supabase.auth.signOut()
         if (error) throw error
             console.log("****")
-            goto('/auth')
+            goto('/')
       }catch(error){
         if (error instanceof Error) {
             alert(error.message)
@@ -28,7 +28,17 @@ import { goto } from '$app/navigation'
     <a href="/">Brand</a>
   </h4>
   <ul class="inline">
-    <li><a href="/todo">Todo</a></li>
+
+
+
+
+
+
+
+
+
+
+    <li><a href="/employee">Employee</a></li>
 		<li><a href="/about">About</a></li>
     <li>
       {#if !$page?.data?.session}

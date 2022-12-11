@@ -1,4 +1,4 @@
-<script>
+<script> 
 import {Form,Input,Button,Toast} from 'spaper'
 
 import {supabase} from '$lib/db' 
