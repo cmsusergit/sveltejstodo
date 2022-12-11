@@ -13,7 +13,8 @@ import { goto } from '$app/navigation'
         const { error } = await supabase.auth.signOut()
         if (error) throw error
             console.log("****")
-            goto('/')
+
+      goto('/')
       }catch(error){
         if (error instanceof Error) {
             alert(error.message)

@@ -4,42 +4,78 @@ import { supabase } from '$lib/db'
 import { onMount } from 'svelte'
 import { page } from '$app/stores'
 import {Form,Modal,Button,Table} from 'spaper'
-import AddTodo from '$lib/component/employee/addrecord.svelte'
-let loading = false,isTodoDlg=false
-let todos=[]
+import AddRecord from '$lib/component/employee/addrecord.svelte'
+import {displayToast} from '$lib/../config'
+let loading = false,isOpenDlg=false
+let employeeList=[]
 onMount(()=>{
-  fetchTodos()
-})
+  fetchEmployee()
 
+})
 const columnList=[
   {field:'id',label:'ID'},
-  {field:'user_id',label:'User'},
-  {field:'task',label:'Content'},
-  {field:'is_complete',content:(dt)=>dt?'<p style="color:green;margin-top:0px;">Completed</p>':'<p style="color:orange;margin-top:0px;">!Completed</p>',label:'Is Completed?',html:true},
-  {field:'inserted_at',content:(dt)=>{return new Date(dt).toLocaleDateString()},
-  label:'InsertedAt'}
+  {field:'emp_name',label:'Name'},
+  {field:'emp_code',label:'Employee Code'},
+  {field:'email',label:'Email'},
+  {field:'contact',label:'Contact'},
+  {field:'emp_type',content:(dt)=>dt==0?'Vacational':(dt==1?'NnVacational':'AdHoc')},
+  {field:'dept_name',label:'Department'},
+  {field:'designation',label:'Designation'}
 ]
-const fetchTodos = async () => {
+const fetchEmployee = async () => {
     let { data, error } = await supabase
-      .from("todos")
+      .from("Employee")
       .select(`*`)
-      .order("id", { ascending: true });
+       .order("emp_name", { ascending: true });
     if (error) {
-      alert(error)
+      displayToast(JSON.stringify(error),'primary')
       console.error("error", error);
     } else {
-      todos = data;
+      employeeList = data;
     }
   };
 </script>
-
 <div>
   <div class="row flex-edges">
     <h1 class="sm-4 col">Todo</h1>
-    <Button on:click={()=>isTodoDlg=true} class="sm-4 col">+New Todo</Button>
+    {#if !isOpenDlg}
+      <Button on:click={()=>isOpenDlg=true} class="sm-4 col">+New Record</Button>
+    {:else}      
+      <Button on:click={()=>isOpenDlg=false} class="sm-4 col">Close</Button>
+    {/if}
+  </div>
+{#if isOpenDlg==true}
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <AddRecord on:recordadded={()=>{displayToast('Added Record','success');fetchEmployee();isOpenDlg=false;}} on:closeDlg={()=>isOpenDlg=false}/>
+{:else}
+  <!-- <Table columns={columnList} 
+  data={employeeList}/> -->
+  {#if employeeList && employeeList.length>0}
+    <Table columns={columnList} data={employeeList}/>
+  {:else}
+    <h4>List Empty</h4>
+  {/if}
+{/if}
 </div>
-<Modal bind:active={isTodoDlg}
-       title="+New Todo" component={AddTodo}>
-</Modal>
-  <Table columns={columnList} data={todos}/>
-</div>
+
+
+
+
+
+
+
+
+
+

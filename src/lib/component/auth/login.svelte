@@ -3,22 +3,14 @@ import {Form,Input,Button,Toast} from 'spaper'
 
 import {supabase} from '$lib/db' 
 import {goto} from '$app/navigation'
-import loggedInUser from '$lib/../store'
+import {displayToast} from '$lib/../config'
 let email='',password=''
 let loading =false
 
-function displayToast(test,type) {
-  Toast.open({
-    message:test,
-    
-    type,
-    duration:2 * 1000,
-    position:'top',
-    dismissible:true
-  })
-}
+
 const handleauth=async(type1)=>{
   try{
+    
     loading = true
     const { error } = (type1=='login')?await supabase.auth.signInWithPassword({ email,password }):await supabase.auth.signUp({ email,password })
   if (error) throw error

@@ -2,36 +2,70 @@
 import { supabase } from '$lib/db'
 
 import { page } from '$app/stores'
-import {Form,Input,Button,Table} from 'spaper'
+import {Form,Select,Input,Button,Table,Toast} from 'spaper'
+import { createEventDispatcher } from 'svelte'
+import {deptList,designationList} from '$lib/../config'
+const dispatch = createEventDispatcher();
+let employeeRecord={
+  user_id:$page.data.session.user.id,
+  emp_name:'',
+  designation:'',
 
-let todo={
-  user_id:$page.data.session.user.id,task:'',is_complete:false, inserted_at:new Date()
+  emp_code:'',
+  emp_type:0, 
+  dept_name:'',
+  contact:'',email:''
 }
-const addtodo=async()=>{
-
-
-
+const addRecord=async()=>{
   const { data, error } = await supabase
-  .from('todos')
+  .from('Employee')
   .insert([
-    todo,
+    employeeRecord,
   ])
-
   if(error)
-    alert(error)
+    alert(JSON.stringify(error))
+  dispatch('recordadded')
  }
 </script>
 
-<div style="width:100%;font-size:100%;">  
-   <Form style="margin:0 auto;width:80%;" >
-    <Input block bind:value={todo.task} placeholder="Todo Text" class="margin-bottom-small" label="Todo Content"/>
-    <div>
-      <Button on:click={addtodo} type="submit" class="margin-top-small">
-        +Todo
-      </Button>
+<div>  
+   <Form style="margin:0 auto;display:flex;flex-direction:column">
+   <form on:submit|preventDefault={addRecord}>
+      <Input block bind:value={employeeRecord.emp_name} placeholder="Employee Name" class="margin-bottom-small" label="Name" required/>
+      <div style="display:flex;justify-content:space-between">
+        <Input block bind:value={employeeRecord.emp_code} placeholder="Employee Code" class="margin-bottom-small margin-right-small" label="Employee Code" required/>
+        <Select label="Employee Type" class="margin-bottom-small margin-left-small" bind:value={employeeRecord.emp_type} required>
+            <option value="0">Vacational</option>
+            <option value="1">NnVacational</option>
+            <option value="2">AdHoc</option>
+        </Select> 
+        <Select label="Department" class="margin-bottom-small margin-left-small" bind:value={employeeRecord.dept_name} required>
+            {#each deptList as dept}
+              <option value={dept.deptName}>{dept.deptName}</option>
+            {/each}
+        </Select>
+        <Select label="Designation" class="margin-bottom-small margin-left-small" bind:value={employeeRecord.designation} required>
+            {#each designationList as designation}
+              <option value={designation}>{designation}</option>
+            {/each}
+        </Select>
     </div>
+      <div style="display:flex;justify-content:space-between">
+        <Input block bind:value={employeeRecord.contact} placeholder="Employee Contact" class="margin-bottom-small margin-right-small" label="Contact" required/>
+        <Input block bind:value={employeeRecord.email} placeholder="Employee Email" class="margin-bottom-small margin-left-small" type="email" label="Email" required/>
+      </div>
+      <div class="margin-top-small border" style="padding:.4em;display:flex;flex-direction:row;justify-content:flex-end">
+
+        <Button nativeType="submit" type="primary" class="margin-top-small margin-right-small">SUBMIT</Button>
+        <Button on:click={()=>{dispatch('closeDlg')}} type="danger" class="margin-top-small margin-left-small">CLOSE</Button>
+      </div>
+    </form>
   </Form>
 </div>
+
+
+
+
 
 
 
