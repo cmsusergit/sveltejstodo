@@ -2,17 +2,17 @@
 import {Form,Input,Button} from 'spaper'
 
 import {supabase} from '$lib/db' 
-import {goto} from '$app/navigation'
 let email='',password=''
 let loading =false,test=''
-const handleLogin=async()=>{
+const handleSignUp=async()=>{
   try{
 
     loading = true
-    const { data:{user},error } = await supabase.auth.signInWithPassword({ email,password })
+    const { error } = await supabase.auth.signUp({ email,password })
     if (error) throw error
+
     console.log("****")
-    test="LOGIN DONE"
+    test="done"
   }catch(error){
      if (error instanceof Error) {
        test=error.message
@@ -28,19 +28,19 @@ const handleLogin=async()=>{
   <h1>
   Login Here
   </h1>
+  <form on:submit|preventDefault="{handleLogin}">
   <Form style="margin:0 auto;width:80%;" >
   <p style="color:red;font-size:110%;">{test}</p>
     <Input block bind:value={email} placeholder="email" class="margin-bottom-small" label="Email"/>
     <Input block bind:value={password} placeholder="password" type="password" label="Password"/>
     <Button
     
-
     
-    on:click={handleLogin} type="submit" class="margin-top-small">
-      Sign in
+    on:click={handleSignUp} type="submit" class="margin-top-small">
+      Sign Up
     </Button>
-    <Button on:click={()=>{goto('/signup')}}>SignUp</Button>
   </Form>
+  </form>
 </div>
 
 
