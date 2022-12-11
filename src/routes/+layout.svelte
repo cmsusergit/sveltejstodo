@@ -4,6 +4,8 @@
 	import { supabase } from '$lib/db'
   import { invalidate } from '$app/navigation'
   import { onMount } from 'svelte'
+	import {page} from '$app/stores'
+	import Auth from '$lib/component/auth/login.svelte'
 	onMount(() => {		
 		const {
       data: { subscription },
@@ -11,7 +13,6 @@
 		supabase.auth.onAuthStateChange(() => {
 						invalidate('supabase:auth')
     })
-			
     return () => {
 			subscription.unsubscribe()
     }
@@ -20,7 +21,11 @@
 <div class="app">
 	<Header />
 	<main>
+	{#if !$page.data.session}
+		<Auth/>
+  {:else}      
 		<slot />
+  {/if}
 	</main>
 
 	<footer>
