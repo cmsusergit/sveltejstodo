@@ -8,16 +8,9 @@ import Spinner from '$lib/component/spinner.svelte'
 import {deptList,designationList} from '$lib/../config'
 const dispatch = createEventDispatcher();
 let loading=false;
-let employeeRecord={
-  user_id:$page.data.session.user.id,
+export let employeeRecord
+export let isUpdate
 
-  emp_name:'',
-  designation:'',
-  emp_code:'',
-  emp_type:0, 
-  dept_name:'',
-  contact:'',email:''
-}
 const addRecord=async()=>{
   loading=true
   const { data, error } = await supabase
@@ -30,10 +23,26 @@ const addRecord=async()=>{
   loading=false
   dispatch('recordadded')
  }
+const updateRecord=async()=>{
+  loading=true
+  const { data, error } = await supabase
+  .from('Employee')
+  .update(employeeRecord).eq('id',+employeeRecord.id)
+  if(error)
+    alert(JSON.stringify(error))
+  loading=false
+  dispatch('recordadded')
+ }
+const onsubmit=async()=>{
+    if(!isUpdate)
+      addRecord()
+    else
+      updateRecord()
+ }
 </script>
-<div>  
+<div> 
    <Form style="margin:0 auto;display:flex;flex-direction:column">
-   <form on:submit|preventDefault={addRecord}>   
+   <form on:submit|preventDefault={onsubmit}>   
    <div class="border">
     <div class="padding-large">
       <Input block bind:value={employeeRecord.emp_name} placeholder="Employee Name" class="margin-bottom-small" label="Name" required/>
@@ -62,7 +71,8 @@ const addRecord=async()=>{
       </div>
       </div>
       <div class="margin-top-small border" style="padding:.4em;display:flex;flex-direction:row;justify-content:flex-end">
-        <Button nativeType="submit" type="primary" class="margin-top-small margin-right-small">SUBMIT</Button>
+
+        <Button nativeType="submit" type="secondary" class="margin-top-small margin-right-small">{isUpdate?'Update Record':'Add Record'}</Button>
         <Button on:click={()=>{dispatch('closeDlg')}} type="danger" class="margin-top-small margin-left-small">CLOSE</Button>
       </div>
     </form>

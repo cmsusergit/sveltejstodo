@@ -23,10 +23,10 @@ import { goto } from '$app/navigation'
   }
 </script>
 <header style="margin:1em auto;width:87%;">
-<Navbar>
-  <h4 slot="brand">
+<Navbar border={false}>
+  <h2 slot="brand">
     <a href="/">Leave Management</a>
-  </h4>
+  </h2>
   <ul class="inline">
     <li><a href="/employee">Employee</a></li>
 		<li><a href="/about">About</a></li>
