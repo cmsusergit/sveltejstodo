@@ -46,6 +46,7 @@ const onsubmit=async()=>{
    <div class="border">
     <div class="padding-large">
       <Input block bind:value={employeeRecord.emp_name} placeholder="Employee Name" class="margin-bottom-small" label="Name" required/>
+
       <div style="display:flex;justify-content:space-between">
         <Input block bind:value={employeeRecord.emp_code} placeholder="Employee Code" class="margin-bottom-small margin-right-small" label="Employee Code" required/>
         <Select label="Employee Type" class="margin-bottom-small margin-left-small" bind:value={employeeRecord.emp_type} required>

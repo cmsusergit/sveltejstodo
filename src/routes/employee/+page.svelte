@@ -3,16 +3,17 @@ import { supabase } from '$lib/db'
 
 import { onMount } from 'svelte'
 import { page } from '$app/stores'
-import {Form,Modal,Button,Pagination,Table} from 'spaper'
+import {Form,Modal,Button,Card,Pagination,Table} from 'spaper'
+import Dialog from '$lib/component/dialog.svelte'
 import AddUpdateRecord from '$lib/component/employee/addrecord.svelte'
 import Spinner from '$lib/component/spinner.svelte'
 import {displayToast} from '$lib/../config'
 let loading = false,isOpenDlg=false
 let currPage=1,pageSize=2
-let employeeList=[]
 
+let employeeList=[]
 let employeeRecord={}
-let isUpdate=false
+let isUpdate=false,recordIdToRemove=-1
 onMount(()=>{
   fetchEmployee()
 })
@@ -34,12 +35,14 @@ const handleEdit=(record)=>{
   isUpdate=true
   isOpenDlg=true
 }
-const handleRemove=async(id)=>{
+
+
+const handleRemove=async()=>{
   loading=true
   const { data, error } = await supabase
   .from('Employee')
   .delete()
-  .eq('id', id)   
+  .eq('id', recordIdToRemove)   
   if(error)
     alert(JSON.stringify(error))
   loading=false  
@@ -97,7 +100,7 @@ const fetchEmployee = async () => {
               <td>{record.dept_name}</td>
               <td>
                 <button on:click={()=>handleEdit(record)} class="btn-secondary" style="padding:0.2em;">Edit</button>
-                <button on:click={()=>handleRemove(record.id)} class="btn-danger" style="padding:0.2em;">Remove</button>
+                <button on:click={()=>{recordIdToRemove=record.id}} class="btn-danger" style="padding:0.2em;">Remove</button>
               </td>
             </tr>
           {/each}
@@ -113,3 +116,12 @@ const fetchEmployee = async () => {
 {/if}
 </div>
 {#if loading}<div><Spinner/></div>{/if}
+{#if recordIdToRemove!=-1}
+<div>
+  <Dialog on:continue={()=>{handleRemove(recordIdToRemove);recordIdToRemove=-1}} on:close={()=>{recordIdToRemove=-1}} title='Remove Dialog'>  
+    Do You Really Want to Remove?
+  </Dialog>
+</div>
+{/if}
+
+
