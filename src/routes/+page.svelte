@@ -7,7 +7,7 @@ import { onMount } from 'svelte'
 let employeeCount=0,leaveFormCount=0
 const fetchEmployeeCount=async ()=>{
 	let { data, error } = await supabase
-			.rpc('countemployee')
+			.rpc('countemployee',{searchby:'emp_name',searchtext:''})
 		if (error) {
 			console.error(error)
 			alert(JSON.stringify(error))
