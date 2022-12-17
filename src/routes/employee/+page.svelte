@@ -4,15 +4,17 @@ import { supabase } from '$lib/db'
 import { onMount } from 'svelte'
 import { page } from '$app/stores'
 import {Form,Modal,Button,Card,Pagination,Table} from 'spaper'
+import {deptList} from '$lib/../config'
 import Dialog from '$lib/component/dialog.svelte'
 import AddUpdateRecord from '$lib/component/employee/addrecord.svelte'
 import Spinner from '$lib/component/spinner.svelte'
 import {displayToast} from '$lib/../config'
+
+
 let loading = false,isOpenDlg=false
 let currPage=1,pageSize=4
-
 let employeeList=[],searchText=''
-let searchBy='emp_name'
+let searchBy='emp_name',selectByDept=''
 let employeeRecord={},recordCount=0
 let sortBy='emp_name',isAscending=true
 let isUpdate=false,recordIdToRemove=-1
@@ -21,6 +23,12 @@ $:{
     fetchEmployee()
   }
 }
+
+$:{    
+  selectByDept;
+  fetchCount()
+  fetchEmployee()
+}
 onMount(()=>{
   fetchCount()
   fetchEmployee()
@@ -28,7 +36,7 @@ onMount(()=>{
 const fetchCount=async()=>{
   loading=true
   let { data, error } = await supabase
-   .rpc('countemployee',{searchby:searchBy,searchtext:searchText}) 
+   .rpc('countemployee',{searchby:searchBy,searchtext:searchText,dd:'',deptname:selectByDept}) 
   if (error) {
     console.error(error)
     alert(JSON.stringify(error))
@@ -74,7 +82,8 @@ const handleRemove=async()=>{
   fetchEmployee()
   displayToast('Removed Record','success')
 }
-const columnList=[ {name:'ID'},{name:'Name',field:'emp_name'},{name:'Employee Code',field:'emp_code'},{name:'Email',field:'email'},{name:'Contact',field:'contact'},{name:'Department'},{name:''}]
+
+const columnList=[ {name:'ID',field:'id'},{name:'Name',field:'emp_name'},{name:'Employee Code',field:'emp_code'},{name:'Email',field:'email'},{name:'Contact',field:'contact'},{name:'Department'},{name:''}]
 const onRecordInserted=()=>{
   displayToast('Added/Updated Record','success')
   fetchCount()
@@ -89,6 +98,7 @@ const fetchEmployee = async () => {
       .from("Employee")
       .select(`id,emp_name,emp_code,email,contact,emp_type,dept_name,designation`)
       .ilike(searchBy, `%${searchText}%`)
+      .ilike('dept_name', `%${selectByDept}%`)
       .order(sortBy, { ascending: isAscending }).range(st,en);
     if (error) {
       displayToast(JSON.stringify(error),'primary')
@@ -99,25 +109,26 @@ const fetchEmployee = async () => {
     loading=false
   };
 </script>
+
+
 <div>
   <div style="display:flex;justify-content:space-between;">
-    <h4>Employee</h4> {sortBy} {isAscending}
+    <h4>Employee</h4>
     {#if !isOpenDlg}
       <Button on:click={handleAddRecord} type="success" >+New Record</Button>
     {/if}
   </div>
-
 {#if isOpenDlg==true}
   <AddUpdateRecord employeeRecord={employeeRecord} isUpdate={isUpdate} on:recordadded={onRecordInserted} on:closeDlg={()=>isOpenDlg=false}/>
 {:else}
   <div style="margin:.5em;padding-right:0.5em;display:flex;justify-content:flex-end;">
     <div style="margin-right:0.4em;display:flex;padding:.1em;align-items:center;">
-    <label for="searchText" style="margin-right:.4em;">Sort By</label>     
-      <select bind:value={sortBy} style="margin-left:.2em;">
-        <option value="emp_name">Name</option>
-        <option value="emp_code">Employee Code</option>
-        <option value="email">Email</option>
-        <option value="contact">Contact</option>
+    <label style="margin-right:.4em;">Select Department</label>     
+      <select bind:value={selectByDept} style="margin-left:.2em;">
+        <option value="">ALL</option>
+        {#each deptList as dept}
+          <option value={dept.deptName}>{dept.deptName}</option>
+        {/each}
       </select>
       <div style="margin-left:.2em;margin-right:0.2em;"></div>
       <label for="searchText" style="margin-right:.4em;">Search</label>      
@@ -140,9 +151,8 @@ const fetchEmployee = async () => {
         <thead>
           <tr>
             {#each columnList as column}
-
               {#if column.field}
-                <th on:click={()=>fetchEmployee()} style="cursor:pointer">{column.name}  
+                <th on:click={()=>{sortBy=column.field;isAscending=!isAscending;fetchEmployee();}} style="cursor:pointer">{column.name}  
                   {#if column.field==sortBy}
                     {#if isAscending}
                       &darr;
@@ -162,9 +172,6 @@ const fetchEmployee = async () => {
             <tr>
               <td>{record.id}</td>
               <td>{record.emp_name}</td>
-
-
-
               <td>{record.emp_code}</td>
               <td>{record.email}</td>
               <td>{record.contact}</td>
@@ -178,6 +185,10 @@ const fetchEmployee = async () => {
         </tbody>
       </table>
     </div>
+  </div>
+
+  <div style="margin:.5em;padding-right:0.5em;display:flex;justify-content:flex-end;">
+    <Pagination total={recordCount} pageSize={pageSize} bind:current={currPage}/>    
   </div>
   {:else}
    <div class="margin-top-small border ">
