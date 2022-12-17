@@ -9,7 +9,7 @@ import Dialog from '$lib/component/dialog.svelte'
 import AddUpdateRecord from '$lib/component/employee/addrecord.svelte'
 import Spinner from '$lib/component/spinner.svelte'
 import {displayToast} from '$lib/../config'
-
+import EmployeeComponent from '$lib/component/employee/list.svelte'
 
 let loading = false,isOpenDlg=false
 let currPage=1,pageSize=4
@@ -121,6 +121,13 @@ const fetchEmployee = async () => {
 {#if isOpenDlg==true}
   <AddUpdateRecord employeeRecord={employeeRecord} isUpdate={isUpdate} on:recordadded={onRecordInserted} on:closeDlg={()=>isOpenDlg=false}/>
 {:else}
+<div>
+  <EmployeeComponent>
+  
+    <p>Hello There</p>
+  </EmployeeComponent>
+</div>
+<!-- <div>
   <div style="margin:.5em;padding-right:0.5em;display:flex;justify-content:flex-end;">
     <div style="margin-right:0.4em;display:flex;padding:.1em;align-items:center;">
     <label style="margin-right:.4em;">Select Department</label>     
@@ -195,6 +202,8 @@ const fetchEmployee = async () => {
     <h4 style="text-align:center">List Empty</h4>
   </div>
   {/if}
+
+</div> -->
 {/if}
 </div>
 {#if loading}<div><Spinner/></div>{/if}
