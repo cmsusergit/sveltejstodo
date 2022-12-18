@@ -160,19 +160,21 @@ const handleDetail=(record)=>{
 </div>
 {/if}
 </div>
+<Modal bind:active={isDetailDlg} title="Employee Detail">
+<div class='border padding-small'>
+  <div style="overflow:auto;width:400px;height:280px;padding:.2em;">
 
 
-
-
-
-
-
-
-<Modal bind:active={isDetailDlg}>
-<div>
-  <h4>
-    {JSON.stringify(employeeRecord)}
-  </h4>
+      <p><b>Id:</b> {employeeRecord.id}</p>
+      <p><b>Name:</b> {employeeRecord.emp_name}</p>
+      <p><b>Employee Code:</b> {employeeRecord.emp_code}</p>
+      <p><b>Department:</b> {employeeRecord.dept_name}</p>
+      <p><b>Designation:</b> {employeeRecord.designation}</p>
+      <p><b>Email:</b> {employeeRecord.email}</p>
+      <p><b>Contact:</b> {employeeRecord.contact}</p>
+      <p><b>Employee Type:</b> {employeeRecord.emp_type==0?'Vacational':(employeeRecord.emp_type==1?'NnVacational':'AdHoc')}</p>
+  </div>
 </div>
 </Modal>
 {#if loading}<div><Spinner/></div>{/if}
+
