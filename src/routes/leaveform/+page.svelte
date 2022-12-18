@@ -15,14 +15,13 @@ let leaveFormRecord,loading=false
     <form on:submit|preventDefault={onsubmit}>   
       <div class="border">
         <div class="padding-large">
-          <Input block placeholder="Employee Name" class="margin-bottom-small" label="Name" required/>
+          <Select style="width:100%;" label="Leave Type" class="margin-bottom-small" required>
+              <option value="0">Vacational</option>
+              <option value="1">NnVacational</option>
+          </Select> 
           <div style="display:flex;justify-content:space-between">
-            <Input block placeholder="Employee Code" class="margin-bottom-small margin-right-small" label="Employee Code" required/>
-            <Select label="Employee Type" class="margin-bottom-small margin-left-small" required>
-                <option value="0">Vacational</option>
-                <option value="1">NnVacational</option>
-                <option value="2">AdHoc</option>
-            </Select> 
+            <Input block type="date" class="margin-bottom-small" label="From Date" required/>
+            <Input block type="date" class="margin-bottom-small margin-left-small" label="To Date" required/>
         </div>
           <div style="display:flex;justify-content:space-between">
             <Input block placeholder="Employee Contact" class="margin-bottom-small margin-right-small" label="Contact" required/>
