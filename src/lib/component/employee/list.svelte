@@ -110,6 +110,7 @@ const handleDetail=(record)=>{
     <table class="table-hover">
       <thead>
         <tr>
+        
           {#each columnList as column}
             {#if column.field}
               <th on:click={()=>{sortBy=column.field;isAscending=!isAscending;fetchEmployee();}} style="cursor:pointer">{column.name}  
