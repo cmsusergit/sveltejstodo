@@ -19,13 +19,12 @@ const fetchEmployeeCount=async ()=>{
 		}
 }
 const fetchLeaveFormCount=async ()=>{
-	let { data, error } = await supabase
-			.rpc('countemployee',{searchby:'emp_name',searchtext:'',dd:'',deptname:''})
+	let { data,count, error } = await supabase.from('Leaveform').select('id',{count:'exact'})
 		if (error) {
 			console.error(error)
 		}
 		else {
-			leaveFormCount=data
+			leaveFormCount=count
 		}
 }
 onMount(()=>{
