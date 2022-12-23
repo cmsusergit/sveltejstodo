@@ -11,14 +11,9 @@ import {displayToast} from '$lib/../config'
 import EmployeeComponent from '$lib/component/employee/list.svelte'
 let loading = false,isOpenDlg=false
 
-let currPage=1,pageSize=4
-let employeeList=[],searchText=''
-let searchBy='emp_name',selectByDept=''
-let employeeRecord={},recordCount=0
-let sortBy='emp_name',isAscending=true
+let employeeRecord={}
 let isUpdate=false,recordIdToRemove=-1
 let handleRemoveFromEmployee
-
 const handleAddRecord=()=>{
   employeeRecord={
       user_id:$page.data.session.user.id,
@@ -56,7 +51,6 @@ const onRecordInserted=()=>{
 }
 
 </script>
-
 <div>
   <div style="display:flex;justify-content:space-between;">
     <h4>Employee</h4>
@@ -96,5 +90,6 @@ const onRecordInserted=()=>{
 
   </Dialog>
 
+
 </div>
-{/if}
+{/if} 

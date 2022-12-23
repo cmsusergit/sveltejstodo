@@ -1,5 +1,5 @@
-<script>
-import {Form,Select,Input,Button,Toast} from 'spaper'
+<script> 
+ import {Form,Select,Input,Button,Toast} from 'spaper'
 
 import {page} from '$app/stores'
 import { onMount } from 'svelte'
