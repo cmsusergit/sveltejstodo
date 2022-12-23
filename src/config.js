@@ -14,7 +14,8 @@ const displayToast = (test, type) => {
 		type,
 		duration: 2 * 1000,
 		position: 'top',
-		dismissible: true
+		dismissible: true,
+		pauseOnHover: true
 	});
 };
 const tt = 0;

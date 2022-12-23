@@ -14,19 +14,19 @@ let leaveformList=[],recordCount=0
 let sortBy='from_dt',isAscending=true
 let leaveTypeList=[],leaveFormRecord=null
 let selectByFull='-',selectByLeavetype=''
+export let currEmpName=""
 const columnList=[ {name:'ID',field:'id'},{name:'Employee Name',},{name:'Leave Type'},{name:'From Date',field:'from_dt'},{name:'To Date',field:'to_dt'},{name:'Total'},{name:'Full/Half'}]
 $:{
   if(currPage){
     fetchLeaveformList()
   }
 }
-
 $:{
   selectByLeavetype
   selectByFull
   fetchLeaveformList()
+  currPage=1
 }
-
 onMount(()=>{
   fetchLeaveType()
   fetchLeaveformList()
@@ -37,15 +37,16 @@ const fetchLeaveformList=async()=>{
   let en=(currPage-1)*pageSize+pageSize-1
   let  dt  
   if(selectByFull!='-')
-    dt= await supabase.from('Leaveform').select(`*,Employee(emp_name),Leavetype!inner(leave_type)`,{ count: 'exact' }).order(sortBy,{ascending: isAscending }).ilike('Leavetype.leave_type', `%${selectByLeavetype}%`).eq('is_full',selectByFull).range(st,en)
+    dt= await supabase.from('Leaveform').select(`*,Employee!inner(emp_name),Leavetype!inner(leave_type)`,{ count: 'exact' }).order(sortBy,{ascending: isAscending }).
+    ilike('Leavetype.leave_type', `%${selectByLeavetype}%`).ilike('Employee.emp_name', `%${currEmpName}%`).eq('is_full',selectByFull).range(st,en)
   else
-    dt= await supabase.from('Leaveform').select(`*,Employee(emp_name),Leavetype!inner(leave_type)`,{ count: 'exact' }).order(sortBy,{ascending: isAscending }).ilike('Leavetype.leave_type', `%${selectByLeavetype}%`).range(st,en)
+    dt= await supabase.from('Leaveform').select(`*,Employee!inner(emp_name),Leavetype!inner(leave_type)`,{ count: 'exact' }).order(sortBy,{ascending: isAscending }).ilike('Leavetype.leave_type', `%${selectByLeavetype}%`).ilike('Employee.emp_name', `%${currEmpName}%`).range(st,en)
     if (dt.error) {
       displayToast(JSON.stringify(dt.error),'primary')
       console.error("error", dt.error);
     } else {
       leaveformList=dt.data
-      recordCount=dt.count      
+      recordCount=dt.count  
     }
     loading=false
 }
@@ -67,14 +68,24 @@ const handleDetail=(record)=>{
   leaveFormRecord=record
   isDetailDlg=true
 }
+
+
+export const reloadList=()=>{
+  fetchLeaveformList()
+  const nn=recordCount/pageSize
+  if(typeof nn == 'number' && !isNaN(nn))
+    if (!Number.isInteger(nn)) {
+      currPage=(currPage-1)<1?1:(currPage-1)
+    }
+} 
 </script>
+
 <svelte:head>
   <title>Leaveform Detail</title>
 </svelte:head>
 <div>
-<h4>LeaveForm Detail</h4>
-<div style="margin:.5em;padding-right:0.5em;display:flex;justify-content:flex-end;align-items:center;flex-wrap: wrap">
 
+<div style="margin:.5em;padding-right:0.5em;display:flex;justify-content:flex-end;align-items:center;flex-wrap: wrap">
   <div style="margin-right:0.4em;display:flex;padding:.1em;align-items:center;flex-wrap: wrap">
   <label style="margin-right:.4em;">Select By</label>     
    <select bind:value={selectByLeavetype} style="margin-left:.2em;">

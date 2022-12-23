@@ -17,10 +17,8 @@ $:{
 }
 onMount(()=>{
   const empId=$page.url.searchParams.get('id')
-  const isUpdateQ=$page.url.searchParams.get('isupdate')
-  fetchEmployeeById(empId)
-  fetchLeaveType()
-  if(!isUpdateQ)
+  const update_id=$page.url.searchParams.get('update_id')
+  if(!update_id)
   {    
       leaveFormRecord={
         employee_id:employeeRecord?.id,
@@ -34,8 +32,11 @@ onMount(()=>{
     }
   }
   else{
+    fetchLeaveformById(update_id)
     isUpdate=true
   }
+  fetchEmployeeById(empId)
+  fetchLeaveType()
 })
 const fetchLeaveType=async()=>{
   loading=true
@@ -67,13 +68,24 @@ const fetchEmployeeById=async(id)=>{
     }
     loading=false
 }
+const fetchLeaveformById=async(id)=>{
+  loading=true
+  let { data, error } = await supabase.from('Leaveform').select('*').eq('id',id)
+		if (error) {
+      alert(JSON.stringify(error))
+			console.error(error)
+    }
+    else{
+      leaveFormRecord=data[0]
+    }
+    loading=false
+}
 const addRecord=async()=>{
   if(!leaveFormRecord)return;
   const { data, error } = await supabase
   .from('Leaveform')
   .insert([leaveFormRecord])
   if(error){
-
     alert(JSON.stringify(error))
   }
   else{
@@ -81,34 +93,39 @@ const addRecord=async()=>{
     if(!isUpdate)goto('/')
   }
 }
-const updateRecord=()=>{}
+const updateRecord=async()=>{
+  if(!leaveFormRecord)return;
+  const { data, error } = await supabase.from('Leaveform').update([leaveFormRecord]).eq("id",leaveFormRecord.id)
+  if(error){
+    alert(JSON.stringify(error))
+  }
+  else{
+    displayToast('Added/Updated Record','success')
+    if(!isUpdate)goto('/')
+    else goto('/leaveform')
+  }
+}
 const onsubmit=()=>{
   if(!isUpdate){
     addRecord()
   }
   else{
+
     updateRecord()
   }
 }
-
-
 const calculateTotalDay=()=>{
   if(!leaveFormRecord || !leaveFormRecord.from_dt || !leaveFormRecord.to_dt)return
   const from_Dt=new Date(leaveFormRecord.from_dt)
   const to_Dt=new Date(leaveFormRecord.to_dt)
   const diff=to_Dt.getTime()-from_Dt.getTime()
-  const total=(diff/(1000*60*60*24))+1
+  const total=(diff/(1000*60*60*24))+1  
   leaveFormRecord.total=(leaveFormRecord.is_full==true)?total:(total-0.5)
-
 }
 </script>
-
-
-
 <div>
 {#if employeeRecord}
   <h4>LeaveForm Detail For Employee: {employeeRecord.emp_name} ({employeeRecord.id})</h4>
-  <p>{JSON.stringify(leaveFormRecord)}</p>
 {/if}
 
 {#if employeeRecord && leaveFormRecord}   
@@ -116,9 +133,11 @@ const calculateTotalDay=()=>{
   <form on:submit|preventDefault={onsubmit}>   
     <div class="border">
       <div class="padding-large">
-        <Select bind:value={leaveFormRecord.leave_type} style="width:100%;" label="Leave Type" class="margin-bottom-small" required>
-            <option value=""></option>
 
+
+
+      
+        <Select bind:value={leaveFormRecord.leave_type} style="width:100%;" label="Leave Type" class="margin-bottom-small" required>
             {#each leaveTypeList as leaveType}                
               <option value={leaveType.id}>{leaveType.leave_type} ({leaveType.leave_alias})</option>
             {/each}
@@ -152,7 +171,7 @@ const calculateTotalDay=()=>{
       </div>
       <div class="margin-top-small border" style="padding:.4em;display:flex;flex-direction:row;justify-content:flex-end">
         <Button nativeType="submit" type="secondary" class="margin-top-small margin-right-small">{isUpdate?'Update Record':'Add Record'}</Button>
-        <Button on:click={()=>{goto("/")}} type="danger" nativeType="button" class="margin-top-small margin-left-small">CLOSE</Button>
+        <Button on:click={()=>{!isUpdate?goto("/"):goto("/leaveform")}} type="danger" nativeType="button" class="margin-top-small margin-left-small">CLOSE</Button>
       </div>
     </form>
 </Form>
