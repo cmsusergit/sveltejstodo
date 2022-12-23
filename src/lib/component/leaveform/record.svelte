@@ -16,6 +16,12 @@ let leaveTypeList=[],leaveFormRecord=null
 let selectByFull='-',selectByLeavetype=''
 const columnList=[ {name:'ID',field:'id'},{name:'Employee Name',},{name:'Leave Type'},{name:'From Date',field:'from_dt'},{name:'To Date',field:'to_dt'},{name:'Total'},{name:'Full/Half'}]
 $:{
+  if(currPage){
+    fetchLeaveformList()
+  }
+}
+
+$:{
   selectByLeavetype
   selectByFull
   fetchLeaveformList()
