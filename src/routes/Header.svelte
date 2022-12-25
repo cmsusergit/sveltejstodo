@@ -29,6 +29,7 @@ import { goto } from '$app/navigation'
   </h2>
   <ul class="inline">
     <li><a href="/employee">Employee</a></li>
+    <li><a href="/leavebalance">Leavebalance</a></li>
 		<li><a href="/about">About</a></li>
     <li>
       {#if !$page?.data?.session}
@@ -38,6 +39,9 @@ import { goto } from '$app/navigation'
       {/if}
     </li>
   </ul>
+
 </Navbar>
 </header>
+
+
 

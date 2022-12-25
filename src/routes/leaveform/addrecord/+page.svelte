@@ -1,6 +1,7 @@
 <script> 
  import {Form,Select,Input,Button,Toast} from 'spaper'
 
+import LeavebalanceComponent from '$lib/component/leaveform/leavebalance.svelte'
 import {page} from '$app/stores'
 import { onMount } from 'svelte'
 import {supabase} from '$lib/db' 
@@ -9,8 +10,8 @@ import Spinner from '$lib/component/spinner.svelte'
 import {goto} from '$app/navigation'
 let employeeRecord
 let leaveTypeList=[],isUpdate=false
-let leaveFormRecord,loading=false
 
+let leaveFormRecord,loading=false
 $:{
     if(leaveFormRecord && leaveFormRecord.from_dt)calculateTotalDay()
     if(leaveFormRecord && leaveFormRecord.to_dt)calculateTotalDay()
@@ -80,7 +81,11 @@ const fetchLeaveformById=async(id)=>{
     }
     loading=false
 }
+
+
+
 const addRecord=async()=>{
+  loading=true
   if(!leaveFormRecord)return;
   const { data, error } = await supabase
   .from('Leaveform')
@@ -89,9 +94,11 @@ const addRecord=async()=>{
     alert(JSON.stringify(error))
   }
   else{
+    const {lbDt,lbError}=await supabase.from('Leavebalance')
     displayToast('Added/Updated Record','success')
     if(!isUpdate)goto('/')
   }
+  loading=false
 }
 const updateRecord=async()=>{
   if(!leaveFormRecord)return;
@@ -103,6 +110,7 @@ const updateRecord=async()=>{
     displayToast('Added/Updated Record','success')
     if(!isUpdate)goto('/')
     else goto('/leaveform')
+
   }
 }
 const onsubmit=()=>{
@@ -129,14 +137,11 @@ const calculateTotalDay=()=>{
 {/if}
 
 {#if employeeRecord && leaveFormRecord}   
-<Form style="margin:0 auto;display:flex;flex-direction:column">
+<LeavebalanceComponent employee_id={employeeRecord.id}></LeavebalanceComponent>
+<Form style="margin:.8em auto;display:flex;flex-direction:column">
   <form on:submit|preventDefault={onsubmit}>   
     <div class="border">
       <div class="padding-large">
-
-
-
-      
         <Select bind:value={leaveFormRecord.leave_type} style="width:100%;" label="Leave Type" class="margin-bottom-small" required>
             {#each leaveTypeList as leaveType}                
               <option value={leaveType.id}>{leaveType.leave_type} ({leaveType.leave_alias})</option>

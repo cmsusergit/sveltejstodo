@@ -1,4 +1,5 @@
 import { writable } from 'svelte/store';
 const leaveBalance = writable([]);
 
-export { leaveBalance };
+const leaveTypeList = writable([]);
+export { leaveBalance, leaveTypeList };
