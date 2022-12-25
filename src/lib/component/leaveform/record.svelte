@@ -14,13 +14,9 @@ let leaveformList=[],recordCount=0
 let sortBy='from_dt',isAscending=true
 let leaveTypeList=[],leaveFormRecord=null
 let selectByFull='-',selectByLeavetype=''
-export let currEmpName=""
+export let employee_id=-1
 const columnList=[ {name:'ID',field:'id'},{name:'Employee Name',},{name:'Leave Type'},{name:'From Date',field:'from_dt'},{name:'To Date',field:'to_dt'},{name:'Total'},{name:'Full/Half'}]
-$:{
-  if(currPage){
-    fetchLeaveformList()
-  }
-}
+
 $:{
   selectByLeavetype
   selectByFull
@@ -35,12 +31,20 @@ const fetchLeaveformList=async()=>{
   loading=true
   let st=(currPage-1)*pageSize
   let en=(currPage-1)*pageSize+pageSize-1
-  let  dt  
+  
+  
+  let tempQuery=supabase.from('Leaveform').select(`*,Employee!inner(emp_name),Leavetype!inner(leave_type)`,{ count: 'exact' }).order(sortBy,{ascending: isAscending }).ilike('Leavetype.leave_type', `%${selectByLeavetype}%`)
   if(selectByFull!='-')
-    dt= await supabase.from('Leaveform').select(`*,Employee!inner(emp_name),Leavetype!inner(leave_type)`,{ count: 'exact' }).order(sortBy,{ascending: isAscending }).
-    ilike('Leavetype.leave_type', `%${selectByLeavetype}%`).ilike('Employee.emp_name', `%${currEmpName}%`).eq('is_full',selectByFull).range(st,en)
-  else
-    dt= await supabase.from('Leaveform').select(`*,Employee!inner(emp_name),Leavetype!inner(leave_type)`,{ count: 'exact' }).order(sortBy,{ascending: isAscending }).ilike('Leavetype.leave_type', `%${selectByLeavetype}%`).ilike('Employee.emp_name', `%${currEmpName}%`).range(st,en)
+    tempQuery=tempQuery.eq('is_full',selectByFull)
+  if(employee_id!=-1)
+    tempQuery=tempQuery.eq('employee_id',employee_id)
+  const dt=await tempQuery.range(st,en)
+  // let  dt  
+  // if(selectByFull!='-')
+  //   dt= await supabase.from('Leaveform').select(`*,Employee!inner(emp_name),Leavetype!inner(leave_type)`,{ count: 'exact' }).order(sortBy,{ascending: isAscending }).
+  //   ilike('Leavetype.leave_type', `%${selectByLeavetype}%`).ilike('Employee.emp_name', `%${currEmpName}%`).eq('is_full',selectByFull).range(st,en)
+  // else
+  //   dt= await supabase.from('Leaveform').select(`*,Employee!inner(emp_name),Leavetype!inner(leave_type)`,{ count: 'exact' }).order(sortBy,{ascending: isAscending }).ilike('Leavetype.leave_type', `%${selectByLeavetype}%`).ilike('Employee.emp_name', `%${currEmpName}%`).range(st,en)
     if (dt.error) {
       displayToast(JSON.stringify(dt.error),'primary')
       console.error("error", dt.error);
@@ -102,17 +106,17 @@ export const reloadList=()=>{
     </select>
   </div>
   <div style="margin-left:.4em;margin-right:0.4em;"></div>
-  <Pagination total={recordCount} pageSize={pageSize} bind:current={currPage}/>    
+  <Pagination on:change={()=>{fetchLeaveformList()}} total={recordCount} pageSize={pageSize} bind:current={currPage}/>    
 </div>
 {#if leaveformList && leaveformList.length>0}
 <div class="margin-top-small border" style="width:100%;overflow:auto;">
+
   <div class="padding-small">
       <table class="table-hover">
         <thead>
           <tr>
             {#each columnList as column}
               {#if column.field}
-
                 <th on:click={()=>{sortBy=column.field;isAscending=!isAscending;fetchLeaveformList();}} style="cursor:pointer">{column.name}  
                   {#if column.field==sortBy}
                     {#if isAscending}
