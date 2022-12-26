@@ -9,7 +9,7 @@
   import {goto} from '$app/navigation'
   import {Form,Modal,Pagination,Popover} from 'spaper'
   import {onMount} from 'svelte'
-  
+  import LeavebalanceComponent from '$lib/component/leaveform/leavebalance.svelte'
   
   let loading = false,isOpenDlg=false
   let leaveFormRecord={},reloadList  
@@ -42,8 +42,9 @@
   <div style="display:flex;justify-content:space-between;">
     <h4>Leaveform Detail</h4>
   </div>
-<div>  
+<div>
   {#if employee_id}
+    {#if employee_id != -1}<LeavebalanceComponent employee_id={employee_id}/>{/if} 
     <LeaveformList employee_id={employee_id} bind:reloadList={reloadList} let:currRecord={record}>
       <Popover label="Edit" position="left"><button on:click={()=>handleEdit(record)} class="btn-secondary" style="padding:0.2em;"><svg class="svg-icon" viewBox="0 0 20 20">
 

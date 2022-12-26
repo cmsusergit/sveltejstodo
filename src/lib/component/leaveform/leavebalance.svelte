@@ -16,7 +16,7 @@
     fetchLeaveBalanceByEmpId()
   })
   const fetchLeaveTypeList=async()=>{
-    let {data,error}=await supabase.from("Leavetype").select('*').eq('is_credit_required',true)
+    let {data,error}=await supabase.from("Leavetype").select('*')
     if(error){
       alert(JSON.stringify(Error))
     }
@@ -41,14 +41,14 @@
   <table class="border padding-small" style="width:100%;text-align:center;">
       <tr>
       {#each $leaveTypeList as leaveType}
-          <th>{leaveType.leave_alias}</th>
+          {#if leaveType.is_credit_required==true}<th>{leaveType.leave_alias}</th>{/if}
       {/each}
       </tr>
     <tbody>
       <tr>      
 
      {#each $leaveTypeList as leaveType}
-        <td>{$leaveBalance?.find(ob=>ob.leave_type==leaveType.id)?.balance}</td>
+        {#if leaveType.is_credit_required==true}<td>{$leaveBalance?.find(ob=>ob.leave_type==leaveType.id)?.balance}</td>{/if}
       {/each}
       </tr>
     </tbody>

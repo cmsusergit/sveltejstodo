@@ -31,7 +31,7 @@ export const handleRemove=async()=>{
     }
   fetchEmployee()
 }
-const columnList=[ {name:'ID',field:'id'},{name:'Name',field:'emp_name'},{name:'Employee Code',field:'emp_code'},{name:'Email',field:'email'},{name:'Contact',field:'contact'},{name:'Department'},{name:''}]
+const columnList=[ {name:'ID',field:'id'},{name:'Name',field:'emp_name'},{name:'Employee Code',field:'emp_code'},{name:'Email',field:'email'},{name:'Contact',field:'contact'},{name:'Department'}]
 const fetchEmployee = async () => {
     loading=true;
     let st=(currPage-1)*pageSize
@@ -106,11 +106,13 @@ const handleDetail=(record)=>{
               <th>{column.name}</th>
             {/if}              
           {/each}
+
         </tr>
       </thead>
-      <tbody>
-        {#each employeeList as record}
 
+
+      <tbody>
+        {#each employeeList as record}        
           <tr>
             <td>{record.id}</td>
             <td>{record.emp_name}</td>
@@ -160,4 +162,16 @@ const handleDetail=(record)=>{
 </div>
 </Modal>
 {#if loading}<div><Spinner/></div>{/if}
+
+
+
+
+<style>
+th,td{
+  font-size:100%;
+  text-align: center;
+}
+</style>
+
+
 

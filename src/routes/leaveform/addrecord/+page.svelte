@@ -2,19 +2,21 @@
  import {Form,Select,Input,Button,Toast} from 'spaper'
 
 import LeavebalanceComponent from '$lib/component/leaveform/leavebalance.svelte'
+import {leaveBalance,leaveTypeList} from '$lib/../store'
 import {page} from '$app/stores'
 import { onMount } from 'svelte'
 import {supabase} from '$lib/db' 
 import {displayToast} from '$lib/../config'
 import Spinner from '$lib/component/spinner.svelte'
 import {goto} from '$app/navigation'
-let employeeRecord
-let leaveTypeList=[],isUpdate=false
 
+
+let employeeRecord
+let isUpdate=false,isDisabled=true
 let leaveFormRecord,loading=false
 $:{
-    if(leaveFormRecord && leaveFormRecord.from_dt)calculateTotalDay()
-    if(leaveFormRecord && leaveFormRecord.to_dt)calculateTotalDay()
+    if(leaveFormRecord && leaveFormRecord.from_dt && leaveFormRecord.to_dt)calculateTotalDay()
+    
 }
 onMount(()=>{
   const empId=$page.url.searchParams.get('id')
@@ -37,22 +39,7 @@ onMount(()=>{
     isUpdate=true
   }
   fetchEmployeeById(empId)
-  fetchLeaveType()
 })
-const fetchLeaveType=async()=>{
-  loading=true
-  let { data, error } = await supabase
-    .from('Leavetype')
-    .select('*')
-		if (error) {
-      alert(JSON.stringify(error))
-			console.error(error)
-		}
-    else{
-      leaveTypeList=data
-    }
-    loading=false
-}
 const fetchEmployeeById=async(id)=>{
   loading=true
   let { data, error } = await supabase
@@ -81,9 +68,6 @@ const fetchLeaveformById=async(id)=>{
     }
     loading=false
 }
-
-
-
 const addRecord=async()=>{
   loading=true
   if(!leaveFormRecord)return;
@@ -93,23 +77,13 @@ const addRecord=async()=>{
   if(error){
     alert(JSON.stringify(error))
   }
-  else{
-    const {data ,error}=await supabase.from('Leavebalance')
-    if(error)
-      displayToast(`Error ${JSON.stringify(error)}`,'warning')
-    else
-    {    
-      displayToast('Added/Updated Record','success')
-    }
+    displayToast('Added/Updated Record','success')
     if(!isUpdate)goto('/')
-  }
   loading=false
 }
 const updateRecord=async()=>{
   if(!leaveFormRecord)return;
   const { data, error } = await supabase.from('Leaveform').update([leaveFormRecord]).eq("id",leaveFormRecord.id)
-
-
   if(error){
     alert(JSON.stringify(error))
   }
@@ -117,32 +91,50 @@ const updateRecord=async()=>{
     displayToast('Added/Updated Record','success')
     if(!isUpdate)goto('/')
     else goto('/leaveform')
-
   }
 }
 const onsubmit=()=>{
   if(!isUpdate){
     addRecord()
   }
-  else{
-
+  else{0
     updateRecord()
   }
 }
 const calculateTotalDay=()=>{
-  if(!leaveFormRecord || !leaveFormRecord.from_dt || !leaveFormRecord.to_dt)return
+  if(!leaveFormRecord ||  !leaveFormRecord.from_dt || !leaveFormRecord.to_dt)return
   const from_Dt=new Date(leaveFormRecord.from_dt)
   const to_Dt=new Date(leaveFormRecord.to_dt)
   const diff=to_Dt.getTime()-from_Dt.getTime()
-  const total=(diff/(1000*60*60*24))+1  
-  leaveFormRecord.total=(leaveFormRecord.is_full==true)?total:(total-0.5)
+  let total=(diff/(1000*60*60*24))+1  
+  total=(leaveFormRecord.is_full==true)?total:(total-0.5)
+  if(total<=0){
+    displayToast("From Date > To Date, Valid Selection is Required","warning")
+
+    isDisabled=true
+    return
+  }
+  if(!leaveFormRecord.leave_type){
+    displayToast("Please,Select Leave Type","warning")
+    isDisabled=true
+    return
+  }
+  const balance=$leaveBalance.find(ob=>ob.leave_type==leaveFormRecord?.leave_type).balance
+  const is_credit_required=$leaveTypeList.find(ob=>ob.id==leaveFormRecord?.leave_type).is_credit_required
+  if(is_credit_required && total > balance){
+    displayToast("Balance Required","warning")
+    isDisabled=true
+    return
+  }
+  else
+    leaveFormRecord.total=total
+    isDisabled=false
 }
 </script>
 <div>
 {#if employeeRecord}
   <h4>LeaveForm Detail For Employee: {employeeRecord.emp_name} ({employeeRecord.id})</h4>
 {/if}
-
 {#if employeeRecord && leaveFormRecord}   
 <LeavebalanceComponent employee_id={employeeRecord.id}></LeavebalanceComponent>
 <Form style="margin:.8em auto;display:flex;flex-direction:column">
@@ -150,14 +142,15 @@ const calculateTotalDay=()=>{
     <div class="border">
       <div class="padding-large">
         <Select bind:value={leaveFormRecord.leave_type} style="width:100%;" label="Leave Type" class="margin-bottom-small" required>
-            {#each leaveTypeList as leaveType}                
+            <option value=""></option>
+            {#each $leaveTypeList as leaveType}               
               <option value={leaveType.id}>{leaveType.leave_type} ({leaveType.leave_alias})</option>
             {/each}
         </Select> 
         <div style="display:flex;justify-content:space-between">
-            <Input bind:value={leaveFormRecord.from_dt} block type="date" class="margin-bottom-small" label="From Date" required/>
+            <Input bind:value={leaveFormRecord.from_dt} block type="date" class="margin-bottom-small" label="From Date" bind:disabled={isUpdate} required/>
             <div class=" margin-left-small"></div>
-            <Input bind:value={leaveFormRecord.to_dt} block type="date" class="margin-bottom-small" label="To Date" required/>
+            <Input bind:value={leaveFormRecord.to_dt} block type="date" class="margin-bottom-small" label="To Date" bind:disabled={isUpdate} required/>
         </div>
         <div style="display:flex;justify-content:space-between">
           <Input bind:value={leaveFormRecord.total} placeholder="Total" style="width:100%;" class="margin-bottom-small" label="Total Days" disabled required/>
@@ -182,7 +175,7 @@ const calculateTotalDay=()=>{
 
       </div>
       <div class="margin-top-small border" style="padding:.4em;display:flex;flex-direction:row;justify-content:flex-end">
-        <Button nativeType="submit" type="secondary" class="margin-top-small margin-right-small">{isUpdate?'Update Record':'Add Record'}</Button>
+        <Button nativeType="submit" type="secondary" class="margin-top-small margin-right-small" bind:disabled={isDisabled}>{isUpdate?'Update Record':'Add Record'}</Button>
         <Button on:click={()=>{!isUpdate?goto("/"):goto("/leaveform")}} type="danger" nativeType="button" class="margin-top-small margin-left-small">CLOSE</Button>
       </div>
     </form>

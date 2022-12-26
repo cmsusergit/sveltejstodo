@@ -36,6 +36,7 @@ onMount(()=>{
 
 
 
+
 <svelte:head>
 	<title>Home</title>
 	<meta name="description" content="Svelte demo app" />
@@ -44,9 +45,10 @@ onMount(()=>{
 <div class="border">
 	<h4>Hello {$page.data.session.user.email}</h4>
 </div>
+
+
 <div style="display: flex;">
 <div class='recordtitle border' style="padding:0px;text-align:center">
-
 	<a href="/employee">
 		<h4>Total Employee Records: <Badge>{employeeCount}</Badge></h4>
 	</a>
