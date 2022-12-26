@@ -94,8 +94,13 @@ const addRecord=async()=>{
     alert(JSON.stringify(error))
   }
   else{
-    const {lbDt,lbError}=await supabase.from('Leavebalance')
-    displayToast('Added/Updated Record','success')
+    const {data ,error}=await supabase.from('Leavebalance')
+    if(error)
+      displayToast(`Error ${JSON.stringify(error)}`,'warning')
+    else
+    {    
+      displayToast('Added/Updated Record','success')
+    }
     if(!isUpdate)goto('/')
   }
   loading=false
@@ -103,6 +108,8 @@ const addRecord=async()=>{
 const updateRecord=async()=>{
   if(!leaveFormRecord)return;
   const { data, error } = await supabase.from('Leaveform').update([leaveFormRecord]).eq("id",leaveFormRecord.id)
+
+
   if(error){
     alert(JSON.stringify(error))
   }

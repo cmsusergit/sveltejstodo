@@ -8,14 +8,14 @@ import {goto} from '$app/navigation'
 import EmployeeComponent from '$lib/component/employee/list.svelte'
 let employeeCount=0,leaveFormCount=0
 const fetchEmployeeCount=async ()=>{
-	let { data, error } = await supabase
-			.rpc('countemployee',{searchby:'emp_name',searchtext:'',dd:'',deptname:''})
+	let { count, error } = await supabase
+			.from('Employee').select('id',{count:'exact'})
 
 		if (error) {
 			console.error(error)
 		}
 		else {
-			employeeCount=data
+			employeeCount=count
 		}
 }
 const fetchLeaveFormCount=async ()=>{
