@@ -68,8 +68,8 @@
   
   </table>
   {#if is_editable}
-    <div style="display:flex;justify-content:right;padding-right:5em;padding:5px;">
-      <button>Update</button><button>Close</button>
+    <div style="display:flex;justify-content:right;padding-right:5em;padding-top:5px;">
+      <button class="padding-right-small btn-secondary">Update</button><button class="margin-left-small btn-danger">Close</button>
     </div>
   {/if}
 </div>
