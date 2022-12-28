@@ -1,4 +1,4 @@
-<script> 
+ <script> 
  import {Form,Select,Input,Button,Toast} from 'spaper'
 
 import LeavebalanceComponent from '$lib/component/leaveform/leavebalance.svelte'
