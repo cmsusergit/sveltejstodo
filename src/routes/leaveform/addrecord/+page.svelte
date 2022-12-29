@@ -6,6 +6,7 @@ import {leaveBalance,leaveTypeList} from '$lib/../store'
 import {page} from '$app/stores'
 import { onMount } from 'svelte'
 import {supabase} from '$lib/db' 
+
 import {displayToast} from '$lib/../config'
 import Spinner from '$lib/component/spinner.svelte'
 import {goto} from '$app/navigation'
