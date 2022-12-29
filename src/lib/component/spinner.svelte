@@ -15,7 +15,7 @@
 position:relative;top:50%;
 }
 .sk-folding-cube {
-  margin: 20px auto;
+  margin: 20px auto; 
   width: 40px;
   height: 40px;
   position: relative;

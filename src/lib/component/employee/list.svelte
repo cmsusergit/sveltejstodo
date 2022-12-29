@@ -15,8 +15,10 @@ let employeeList=[],searchText=''
 let searchBy='emp_name',selectByDept=''
 let employeeRecord={},recordCount=0
 let sortBy='emp_name',isAscending=true
+let selectByType=''
+
 $:{    
-  selectByDept;
+  selectByDept;selectByType;
   fetchEmployee()
 }
 onMount(()=>{
@@ -36,21 +38,23 @@ const fetchEmployee = async () => {
     loading=true;
     let st=(currPage-1)*pageSize
     let en=(currPage-1)*pageSize+pageSize-1
-    let dt = await supabase
-      .from("Employee")
+    let query=supabase.from("Employee")
       .select(`id,emp_name,emp_code,email,contact,emp_type,dept_name,designation`,{count:'exact'})
       .ilike(searchBy, `%${searchText}%`)
       .ilike('dept_name', `%${selectByDept}%`)
-      .order(sortBy, { ascending: isAscending }).range(st,en);
-    if (dt.error) {
-      displayToast(JSON.stringify(error),'primary')
-      console.error("error", error);
-    } else {
-
-      employeeList = dt.data
-      recordCount=dt.count
-      currPage=1
-    }
+      if(selectByType)
+        query=query.eq('emp_type',selectByType)
+      let dt = await query.order(sortBy, { ascending: isAscending }).range(st,en);
+    
+    
+      if (dt.error) {
+        displayToast(JSON.stringify(error),'primary')
+        console.error("error", error);
+      } else {
+        employeeList = dt.data
+        recordCount=dt.count
+        currPage=1
+      }
     loading=false
   };
 const handleDetail=(record)=>{
@@ -58,13 +62,31 @@ const handleDetail=(record)=>{
   isDetailDlg=true
 }
 </script>
+
+
+
+
+
 <div>
 <div style="margin:.5em;padding-right:0.5em;display:flex;justify-content:flex-end;flex-wrap: wrap">
   <div style="margin-right:0.4em;display:flex;padding:.1em;align-items:center;flex-wrap: wrap">
-  <label style="margin-right:.4em;">Select Department</label>     
+        <label style="margin-right:.4em;">Select Type</label>     
+        <select label="Employee Type" style="margin-left:.2em;" bind:value={selectByType} required>
+          <option value="">ALL</option>
+          
+          <option value="0">Vacational</option>
+          <option value="1">NnVacational</option>
+          <option value="2">AdHoc</option>
+        </select>       
+    </div>
+    <div style="margin-right:0.4em;display:flex;padding:.1em;align-items:center;flex-wrap: wrap">
+    <label style="margin-right:.4em;">Select Department</label>     
     <select bind:value={selectByDept} style="margin-left:.2em;">
+
       <option value="">ALL</option>
- 
+      
+      
+      
       {#each deptList as dept}
         <option value={dept.deptName}>{dept.deptName}</option>
       {/each}

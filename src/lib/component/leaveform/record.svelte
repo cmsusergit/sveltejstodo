@@ -1,5 +1,5 @@
 <script>
-import {Form,Modal,Pagination,Popover} from 'spaper'
+import  {Form,Modal,Pagination,Popover} from 'spaper'
 
 import {page} from '$app/stores'
 import { onMount } from 'svelte'
@@ -16,7 +16,6 @@ let leaveTypeList=[],leaveFormRecord=null
 let selectByFull='-',selectByLeavetype=''
 export let employee_id=-1
 const columnList=[ {name:'ID',field:'id'},{name:'Employee Name',},{name:'Leave Type'},{name:'From Date',field:'from_dt'},{name:'To Date',field:'to_dt'},{name:'Total'},{name:'Full/Half'}]
-
 $:{
   selectByLeavetype
   selectByFull

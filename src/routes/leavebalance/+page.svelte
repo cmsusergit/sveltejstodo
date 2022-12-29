@@ -15,8 +15,7 @@ let currEmployee,is_editable=false
   <h4>  
     Leavebalance Detail
   </h4>
-    {#if currEmployee} {JSON.stringify(currEmployee)}
-
+    {#if currEmployee} 
       <LeavebalanceComponent on:set_editable={(ee)=>{is_editable=ee.detail.value}} employee_id={currEmployee.id} is_editable={is_editable}/>
     {/if}
     <EmployeeComponent let:currRecord={record}>    

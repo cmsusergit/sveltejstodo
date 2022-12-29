@@ -137,7 +137,7 @@ const calculateTotalDay=()=>{
   <h4>LeaveForm Detail For Employee: {employeeRecord.emp_name} ({employeeRecord.id})</h4>
 {/if}
 {#if employeeRecord && leaveFormRecord}   
-<LeavebalanceComponent employee_id={employeeRecord.id}></LeavebalanceComponent>
+<LeavebalanceComponent employee_id={employeeRecord.id} is_editable={false}></LeavebalanceComponent>
 <Form style="margin:.8em auto;display:flex;flex-direction:column">
   <form on:submit|preventDefault={onsubmit}>   
     <div class="border">
