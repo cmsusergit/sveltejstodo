@@ -73,7 +73,9 @@ const fetchLeaveTypeList=async()=>{
         <button on:click={resetLeaveBalance} type="button" style="margin-right:5px;width:50%;">Reset</button>
       </div>
     </div>
+  
   </div>
 </Modal>
+
 
 

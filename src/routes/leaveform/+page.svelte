@@ -1,15 +1,15 @@
 <script>
-  import {supabase} from '$lib/db' 
-  import Dialog from '$lib/component/dialog.svelte'
-  import AddUpdateRecord from '$lib/component/employee/addrecord.svelte'
-  import {page} from '$app/stores'
-  import Spinner from '$lib/component/spinner.svelte'
-  import {displayToast} from '$lib/../config'
-  import LeaveformList from '$lib/component/leaveform/record.svelte'
-  import {goto} from '$app/navigation'
-  import {Form,Modal,Pagination,Popover} from 'spaper'
-  import {onMount} from 'svelte'
-  import LeavebalanceComponent from '$lib/component/leaveform/leavebalance.svelte'
+import {supabase} from '$lib/db' 
+import Dialog from '$lib/component/dialog.svelte'
+import AddUpdateRecord from '$lib/component/employee/addrecord.svelte'
+import {page} from '$app/stores'
+import Spinner from '$lib/component/spinner.svelte'
+import {displayToast} from '$lib/../config'
+import LeaveformList from '$lib/component/leaveform/record.svelte'
+import {goto} from '$app/navigation'
+import {Form,Modal,Pagination,Popover} from 'spaper'
+import {onMount} from 'svelte'
+import LeavebalanceComponent from '$lib/component/leaveform/leavebalance.svelte'
   
   let loading = false,isOpenDlg=false
   let leaveFormRecord={},reloadList  
