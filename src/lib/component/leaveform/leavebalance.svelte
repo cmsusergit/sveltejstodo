@@ -67,12 +67,12 @@
       
     <tr>
       {#each $leaveTypeList as leaveType}
-          
           {#if leaveType.is_credit_required==true}<th>{leaveType.leave_alias}</th>{/if}
       {/each}
       </tr>
     <tbody>
       <tr>   
+      
       
       {#each $leaveBalance as lbRecord}
           <td class="">          
