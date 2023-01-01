@@ -11,7 +11,21 @@ let isOpenDlg=false
 onMount(()=>{fetchLeaveTypeList();})
 
 
-const addLeaveBalance=()=>{}
+const addLeaveBalance=async()=>{
+  let { data, error } = await supabase
+  .rpc('updateleavebalance1', {
+    emptype:0, 
+    flag:true, 
+    ltype:1, 
+    value:0.0
+  })
+  if(error){
+    alert(JSON.stringify(error))
+    return
+  }
+
+  alert("BatchUpdate Done")
+}
 const resetLeaveBalance=()=>{}
 const fetchLeaveTypeList=async()=>{
     if($leaveTypeList && $leaveTypeList.length>0)return;
@@ -50,30 +64,42 @@ const fetchLeaveTypeList=async()=>{
    </EmployeeComponent>
 </div>
 <Modal bind:active={isOpenDlg} title="Batch Update">
-  <div style="width:20em;padding:10px;">
-    <div >
-      <div class="border padding-small" style="display:flex;justify-content:space-around;" >
-        <div>
-          <label for="leavetype">Leave Type</label>
 
-          <select id="leavetype">      
-            {#each $leaveTypeList as leaveType}
-              <option value={leaveType.id}>{leaveType.leave_type}</option>
-            {/each}
-          </select>
-        </div>
-        <div>
-          <label for="leavebalance">Leave Balance</label>
-          
-          <input type="number">
+  <div style="width:20em;padding:10px;">
+    <div>
+      <div  class="border padding-small">
+        <div style="display:flex;justify-content:space-around;" >
+          <div>
+            <label for="leavetype">Leave Type</label>
+            <select id="leavetype">      
+              {#each $leaveTypeList as leaveType}
+                <option value={leaveType.id}>{leaveType.leave_type}</option>
+              
+              {/each}
+            </select>
+          </div>
+          <div>
+            <label for="leavetype">Leave Type</label>
+            <select id="leavetype">      
+              {#each $leaveTypeList as leaveType}
+                <option value={leaveType.id}>{leaveType.leave_type}</option>
+              {/each}
+            </select>
+          </div>
+        </div> 
+        <div style="margin-top:.4em;padding:10px;">
+              <label for="leavebalance">Leave Balance</label>
+              <input style="width:100%;" type="number">
+
+
+
         </div>
       </div>
       <div style="margin-top:.2em;display:flex;justify-content:end;padding:.1em;">
         <button on:click={addLeaveBalance} type="button" style="margin-right:5px;width:50%;">+Add</button>
         <button on:click={resetLeaveBalance} type="button" style="margin-right:5px;width:50%;">Reset</button>
       </div>
-    </div>
-  
+    </div>  
   </div>
 </Modal>
 
