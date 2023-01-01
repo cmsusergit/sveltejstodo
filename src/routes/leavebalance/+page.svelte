@@ -1,5 +1,5 @@
 <script>
-import {supabase} from '$lib/db' 
+import {supabase} from '$lib/db'  
 
 import EmployeeComponent from '$lib/component/employee/list.svelte'
 import {leaveTypeList} from '$lib/../store'
